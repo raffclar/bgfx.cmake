@@ -9,6 +9,7 @@
 # this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 
 if( TARGET spirv-cross )
+    message("SPIRV-Cross Target already exists, using that")
 	return()
 endif()
 

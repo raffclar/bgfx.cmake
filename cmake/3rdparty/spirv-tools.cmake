@@ -9,6 +9,7 @@
 # this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 
 if( TARGET spirv-tools )
+    message("SPIRV-Tools Target already exists, using that")
 	return()
 endif()
 
