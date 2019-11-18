@@ -1,3 +1,19 @@
+# bgfx.cmake
+
+### How to use
+
+1. Unzip one of more variants in a folder (eg `C:\Libraries\bgfx`)
+2. Set the environment variable `bgfx_DIR` to this folder (eg `C:\Libraries\bgfx`)
+3. In your CMakeLists.txt, add
+    ```
+    find_package(bgfx)
+    ```
+
+4. Then link you excecutable with bgfx
+    ```
+    target_link_libraries(my_exe bgfx::bgfx)
+    ```
+
 bgfx.cmake
 ===================
 [![Build Status](https://travis-ci.org/JoshuaBrookover/bgfx.cmake.svg?branch=master)](https://travis-ci.org/JoshuaBrookover/bgfx.cmake)
