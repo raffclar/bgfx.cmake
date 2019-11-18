@@ -9,7 +9,7 @@
 # this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 
 cmake_minimum_required( VERSION 3.0 )
-project( bgfx )
+project( bgfx VERSION 1.0.0 )
 
 set_property( GLOBAL PROPERTY USE_FOLDERS ON )
 set(CMAKE_CXX_STANDARD 14)
@@ -85,7 +85,9 @@ if( BGFX_INSTALL )
 	# Use:
 	#   * PROJECT_VERSION
 	write_basic_package_version_file(
-		"${version_config}" COMPATIBILITY SameMajorVersion
+		"${version_config}"
+		VERSION 1.0.0
+		COMPATIBILITY SameMajorVersion
 	)
 
 	# Configure '<PROJECT-NAME>Config.cmake'
