@@ -1,0 +1,39 @@
+trigger:
+- master
+pr:
+- master
+
+jobs:
+- job: windows
+  displayName: 'Windows'
+  pool:
+    vmImage: 'windows-2019'
+
+  strategy:
+    matrix:
+      Win32-Release:
+        buildPlatform: Win32
+        buildConfiguration: Release
+      Win32-Debug:
+        buildPlatform: Win32
+        buildConfiguration: Debug
+      x64-Release:
+        buildPlatform: x64
+        buildConfiguration: Release
+      x64-Debug:
+        buildPlatform: x64
+        buildConfiguration: Debug
+
+  workspace:
+    clean: all
+
+  steps:
+  - task: CMake@1
+    inputs:
+      workingDirectory: 'build_$(buildPlatform)'
+      cmakeArgs: '-A "$(buildPlatform)" ..'
+
+  - task: CMake@1
+    inputs:
+      workingDirectory: 'build_$(buildPlatform)'
+      cmakeArgs: '--build . --target install --config $(buildConfiguration)'
