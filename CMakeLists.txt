@@ -112,6 +112,11 @@ if( BGFX_INSTALL )
 	install( DIRECTORY ${BIMG_DIR}/include/bimg DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 	install( DIRECTORY ${BGFX_DIR}/include/bgfx DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
+	# header required for shader compilation
+	install( FILES ${BGFX_DIR}/src/bgfx_shader.sh ${BGFX_DIR}/src/bgfx_compute.sh
+		DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/bgfx"
+	)
+
 	# install tools
 	if( BGFX_BUILD_TOOLS )
 		install( TARGETS shaderc
