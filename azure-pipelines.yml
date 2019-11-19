@@ -35,10 +35,10 @@ jobs:
     
   - task: CMake@1
     inputs:
-      workingDirectory: 'build_$(buildPlatform)'
-      cmakeArgs: '-A "$(buildPlatform)" ..'
+      workingDirectory: 'build_$(buildPlatform)_$(buildConfiguration)'
+      cmakeArgs: '-A "$(buildPlatform)" -DCMAKE_BUILD_TYPE=$(buildConfiguration) -DCMAKE_DEBUG_POSTFIX=d -DCMAKE_INSTALL_PREFIX=./install -DBGFX_BUILD_EXAMPLES=OFF -DBGFX_BUILD_TOOLS=ON -DBGFX_INSTALL=ON ..'
 
   - task: CMake@1
     inputs:
-      workingDirectory: 'build_$(buildPlatform)'
+      workingDirectory: 'build_$(buildPlatform)_$(buildConfiguration)'
       cmakeArgs: '--build . --target install --config $(buildConfiguration)'
