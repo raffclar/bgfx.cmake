@@ -1,0 +1,57 @@
+trigger:
+- master
+pr:
+- master
+
+jobs:
+- job: windows
+  displayName: 'Windows'
+  pool:
+    vmImage: 'windows-2019'
+
+  strategy:
+    matrix:
+      Win32:
+        buildPlatform: Win32
+      x64:
+        buildPlatform: x64
+
+  workspace:
+    clean: all
+
+  steps:
+  - checkout: self
+    clean: true
+    fetchDepth: 1
+    submodules: recursive
+
+  - task: CMake@1
+    inputs:
+      workingDirectory: 'build_$(buildPlatform)'
+      cmakeArgs: '-A "$(buildPlatform)" -DCMAKE_DEBUG_POSTFIX=d -DCMAKE_INSTALL_PREFIX=./install -DBGFX_BUILD_EXAMPLES=OFF -DBGFX_BUILD_TOOLS=ON -DBGFX_INSTALL=ON ..'
+
+  - task: CMake@1
+    displayName: Build Debug
+    inputs:
+      workingDirectory: 'build_$(buildPlatform)'
+      cmakeArgs: '--build . --target install --config Debug'
+
+  - task: CMake@1
+    displayName: Build Release
+    inputs:
+      workingDirectory: 'build_$(buildPlatform)'
+      cmakeArgs: '--build . --target install --config Release'
+
+  - task: ArchiveFiles@2
+    displayName: Archive
+    inputs:
+      rootFolderOrFile: 'build_$(buildPlatform)/install'
+      includeRootFolder: false
+      archiveType: '7z'
+      archiveFile: 'bgfx-windows-$(buildPlatform).7z'
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish
+    inputs:
+      PathtoPublish: bgfx-windows-$(buildPlatform).7z
+      ArtifactName: 'bgfx-windows-$(buildPlatform)'
