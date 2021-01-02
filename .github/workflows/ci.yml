@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+    - master
+    - gh-actions
+
+jobs:
+  linux:
+    name: Linux
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - compiler: clang
+            cxxcompiler: clang++
+          - compiler: gcc
+            cxxcompiler: g++
+
+    runs-on: ubuntu-20.04
+    env:
+      CC: ${{ matrix.compiler }}
+      CXX: ${{ matrix.cxxcompiler }}
+
+    steps:
+    - name: Install dependencies
+      run: sudo apt-get install libgl1-mesa-dev
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - uses: lukka/get-cmake@latest
+
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        echo "::group::CMake"
+        cmake ..
+        echo "::endgroup::"
+        echo "::group::Build"
+        echo "Running on $(nproc) cores"
+        make -j$(nproc)
+        echo "::endgroup::"
+
+  windows:
+    name: Windows
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - arch: Win32
+        - arch: x64
+        - arch: ARM
+        - arch: ARM64
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - uses: lukka/get-cmake@latest
+
+    - name: Build
+      uses: lukka/run-cmake@v3
+      with:
+        cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
+        buildDirectory: '${{ github.workspace }}/build'
+        cmakeBuildType: 'Release'
+        cmakeAppendedArgs: ' -G "Visual Studio 16 2019" -A ${{ matrix.arch }}'
+        buildWithCMakeArgs: ' -- /m'
+
+  macos:
+    name: macOS
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - uses: lukka/get-cmake@latest
+
+    - name: Build
+      uses: lukka/run-cmake@v3
+      with:
+        cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
+        buildDirectory: '${{ github.workspace }}/build'
+
+  #emscripten:
+   # name: Emscripten
+    #runs-on: ubuntu-20.04
+
+    #steps:
+    #  - uses: docker://continuumio/anaconda3:2019.07
+
+    # before_script: 
+    #   - docker run -dit --name emscripten -v $(pwd):/src trzeci/emscripten:sdk-incoming-64bit bash
+    # script:
+    #   - docker exec -it emscripten emconfigure cmake . -DBGFX_BUILD_TOOLS=OFF -DBGFX_AMALGAMATED=$AMALGAMATED -DBX_AMALGAMATED=$AMALGAMATED
+    #   - docker exec -it emscripten emmake make
+
+#  android:
+ #   name: Android
+  #  runs-on: ubuntu-20.04
+
+#    strategy:
+ #     fail-fast: false
+  #    matrix:
+   #     include:
+    #    - arch: X86
+     #   - arch: armeabi-v7a
+      
+    # - CMAKE_FLAGS="-DCMAKE_SYSTEM_NAME=Android -DBGFX_BUILD_TOOLS=OFF -DBGFX_BUILD_EXAMPLES=OFF -DCMAKE_ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r18b -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang -DCMAKE_ANDROID_STL_TYPE=c++_shared -DCMAKE_ANDROID_API=26"
+    # - CMAKE_FLAGS="-DCMAKE_SYSTEM_NAME=Android -DBGFX_BUILD_TOOLS=OFF -DBGFX_BUILD_EXAMPLES=OFF -DCMAKE_ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r18b -DCMAKE_ANDROID_ARCH_ABI=x86 -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang -DCMAKE_ANDROID_STL_TYPE=c++_shared -DCMAKE_ANDROID_API=26"
